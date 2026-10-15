@@ -1,73 +1,166 @@
+const display = document.getElementById("display");
+const history = document.getElementById("history");
+const buttons = document.querySelectorAll(".key");
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aesthetic Calculator</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <main class="app">
-    <div class="calculator">
-      <header class="calc-header">
-        <div class="brand">
-          <span class="brand-icon">✳</span>
-          <div>
-            <h1>calcula</h1>
-            <p>Simple things, beautifully done.</p>
-          </div>
-        </div>
-        <span class="status-dot"></span>
-      </header>
+let expression = "";
+let finished = false;
 
-      <section class="display">
-        <div class="display-label">YOUR CALCULATION</div>
-        <div id="history" class="history"></div>
-        <input
-          type="text"
-          id="display"
-          value="0"
-          aria-label="Layar kalkulator"
-          readonly
-        >
-      </section>
+function refresh() {
+  display.value = expression || "0";
+}
 
-      <section class="keypad" aria-label="Tombol kalkulator">
-        <button class="key function" data-action="clear">AC</button>
-        <button class="key function" data-action="delete">DEL</button>
-        <button class="key function" data-action="percent">%</button>
-        <button class="key operator" data-value="/">÷</button>
+function pressNumber(value) {
+  if (finished) {
+    expression = "";
+    finished = false;
+  }
 
-        <button class="key" data-value="7">7</button>
-        <button class="key" data-value="8">8</button>
-        <button class="key" data-value="9">9</button>
-        <button class="key operator" data-value="*">×</button>
+  expression += value;
+  refresh();
+}
 
-        <button class="key" data-value="4">4</button>
-        <button class="key" data-value="5">5</button>
-        <button class="key" data-value="6">6</button>
-        <button class="key operator" data-value="-">−</button>
+function pressOperator(value) {
+  if (finished) finished = false;
 
-        <button class="key" data-value="1">1</button>
-        <button class="key" data-value="2">2</button>
-        <button class="key" data-value="3">3</button>
-        <button class="key operator" data-value="+">+</button>
+  if (!expression) {
+    if (value === "-") expression = "-";
+    refresh();
+    return;
+  }
 
-        <button class="key double-zero" data-value="00">00</button>
-        <button class="key" data-value="0">0</button>
-        <button class="key" data-action="decimal">.</button>
-        <button class="key equals" data-action="equals">=</button>
-      </section>
+  const last = expression.slice(-1);
 
-      <footer class="calc-footer">
-        <span>MADE FOR YOUR EVERYDAY</span>
-        <span>✦ 01</span>
-      </footer>
-    </div>
-    <p class="page-caption">A little space for clear thinking.</p>
-  </main>
+  if ("+-*/".includes(last)) {
+    expression = expression.slice(0, -1) + value;
+  } else {
+    expression += value;
+  }
 
-  <script src="script.js"></script>
-</body>
-</html>
+  refresh();
+}
+
+function clearAll() {
+  expression = "";
+  history.textContent = "";
+  finished = false;
+  refresh();
+}
+
+function deleteLast() {
+  if (finished) {
+    clearAll();
+    return;
+  }
+
+  expression = expression.slice(0, -1);
+  refresh();
+}
+
+function decimal() {
+  if (finished) {
+    expression = "";
+    finished = false;
+  }
+
+  const part = expression.split(/[+\-*/]/).pop();
+
+  if (part.includes(".")) return;
+
+  if (!part) expression += "0.";
+  else expression += ".";
+
+  refresh();
+}
+
+function percent() {
+  if (!expression || finished) return;
+
+  const match = expression.match(/(\d+\.?\d*|\.\d+)$/);
+
+  if (!match) return;
+
+  const result = Number(match[0]) / 100;
+
+  expression =
+    expression.slice(0, -match[0].length) + result;
+
+  refresh();
+}
+
+function calculate() {
+  if (!expression) return;
+
+  try {
+    if (!/^[0-9+\-*/.()\s]+$/.test(expression)) {
+      throw new Error("Input salah");
+    }
+
+    if (/[+\-*/.]$/.test(expression)) {
+      throw new Error("Hitungan belum selesai");
+    }
+
+    const result = Function(
+      '"use strict"; return (' + expression + ')'
+    )();
+
+    if (!Number.isFinite(result)) {
+      throw new Error("Hasil tidak valid");
+    }
+
+    history.textContent =
+      expression.replace(/\*/g, "×").replace(/\//g, "÷") + " =";
+
+    expression = String(Number(result.toPrecision(12)));
+    finished = true;
+    refresh();
+  } catch {
+    display.value = "Error";
+    expression = "";
+    finished = false;
+  }
+}
+
+// Klik tombol kalkulator
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    const value = button.dataset.value;
+    const action = button.dataset.action;
+
+    if (action === "clear") clearAll();
+    else if (action === "delete") deleteLast();
+    else if (action === "decimal") decimal();
+    else if (action === "percent") percent();
+    else if (action === "equals") calculate();
+    else if (value !== undefined) {
+      if ("+-*/".includes(value)) {
+        pressOperator(value);
+      } else {
+        pressNumber(value);
+      }
+    }
+  });
+});
+
+// Bisa menggunakan keyboard juga
+document.addEventListener("keydown", event => {
+  const key = event.key;
+
+  if (/^[0-9]$/.test(key)) {
+    pressNumber(key);
+  } else if ("+-*/".includes(key)) {
+    pressOperator(key);
+  } else if (key === ".") {
+    decimal();
+  } else if (key === "Enter" || key === "=") {
+    event.preventDefault();
+    calculate();
+  } else if (key === "Backspace") {
+    deleteLast();
+  } else if (key === "Escape" || key === "Delete") {
+    clearAll();
+  } else if (key === "%") {
+    percent();
+  }
+});
+
+refresh();
