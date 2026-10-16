@@ -1,144 +1,45 @@
-* {
-  margin: 0;
-  padding: 0;
+*{
+  font-size: 'poppies',sans-serif;
+  margin : 0;
+  padding :0;
   box-sizing: border-box;
 }
-
-body {
-  height: 100vh;
+body{
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  font-family: Arial, sans-serif;
-  background: #10111f;
+  height: 100vh;
+  background:#eaf5ec;
 }
-
-.calculator {
-  width: 280px;
-  padding: 15px;
-  background: white;
-  border-radius: 18px;
-  box-shadow: 0 5px 20px #0004;
+.container{
+  max-width: 600px;
+  background: #fccfed;
+  padding: 10px;
+  border-radius: 12px;
 }
-
-.calc-header {
-  margin-bottom: 15px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-icon {
-  font-size: 25px;
-  color: #ff756d;
-}
-
-.brand h1 {
+.container input{
+  padding: 20px;
+  height: 80px;
+  width: 100%;
+  outline: none;
+  pointer-events: none;
+  margin-bottom: 10px;
+  border: 0;
+  text-align: right;
   font-size: 20px;
 }
-
-.brand p {
-  font-size: 10px;
-  color: gray;
+.buttons {
+  display : grid;
+  grid-template-columns: repeat(4,1fr);
+  gap : 10px;
 }
-
-.status-dot {
-  display: none;
-}
-
-.display {
-  padding: 10px;
-  margin-bottom: 12px;
-  background: #f5f5f5;
-  border-radius: 10px;
-}
-
-.display-label {
-  font-size: 9px;
-  color: gray;
-}
-
-.history {
-  min-height: 18px;
-  text-align: right;
-  font-size: 12px;
-  color: gray;
-}
-
-#display {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  text-align: right;
-  font-size: 30px;
-  color: #222;
-}
-
-.keypad {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.key {
-  height: 45px;
-  border: none;
-  border-radius: 9px;
-  background: #eee;
-  font-size: 18px;
+.buttons button{
+  padding: 12px 10px;
+  font-size: 20px;
   cursor: pointer;
+  border: none;
+  border-radius: 7px;
 }
-
-.key:hover {
-  background: #ddd;
-}
-
-.key:active {
-  transform: scale(0.95);
-}
-
-.function {
-  color: #ff6258;
-  background: #fff0ee;
-}
-
-.operator {
-  color: #ff6258;
-  background: #ffe9e7;
-}
-
-.equals {
-  color: white;
-  background: #ff756d;
-}
-
-.equals:hover {
-  background: #ed5e56;
-}
-
-.calc-footer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-  color: gray;
-  font-size: 8px;
-}
-
-.page-caption {
-  margin-top: 10px;
-  text-align: center;
-  color: gray;
-  font-size: 10px;
-}
-
-@media (max-width: 320px) {
-  .calculator {
-    width: 100%;
-  }
+.Operator{
+  color : hwb(235 51% 8%);
 }
